@@ -11,19 +11,35 @@ import {
 } from "antd";
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { loginCredentials } from "../../types";
-import { login } from "../../http/api";
+import { login, self } from "../../http/api";
+import { useAuthStore } from "../../store";
+
 
 const loginUser = async (credentials: loginCredentials) => {
   const { data } = await login(credentials);
   return data;
 };
+const getUser = async () => {
+  const { data } = await self();
+  return data;
+};
 const LoginPage = () => {
+  const { setUser } = useAuthStore();
+  const { data: userData, refetch } = useQuery({
+    queryKey: ["self"],
+    queryFn: getUser,
+    enabled: false,
+  });
+
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"],
     mutationFn: loginUser,
     onSuccess: async () => {
+      const userRefetchData = await refetch();
+      setUser(userRefetchData.data);
+      console.log("user data", userRefetchData );
       console.log("login successfull");
     },
   });
