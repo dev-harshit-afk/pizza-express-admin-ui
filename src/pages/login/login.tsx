@@ -1,7 +1,33 @@
-import { Layout, Card, Space, Form, Input, Checkbox, Button, Flex } from "antd";
+import {
+  Layout,
+  Card,
+  Space,
+  Form,
+  Input,
+  Checkbox,
+  Button,
+  Flex,
+  Alert,
+} from "antd";
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
+import { useMutation } from "@tanstack/react-query";
+import type { loginCredentials } from "../../types";
+import { login } from "../../http/api";
+
+const loginUser = async (credentials: loginCredentials) => {
+  const { data } = await login(credentials);
+  return data;
+};
 const LoginPage = () => {
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: loginUser,
+    onSuccess: async () => {
+      console.log("login successfull");
+    },
+  });
+
   return (
     <>
       <Layout
@@ -34,7 +60,22 @@ const LoginPage = () => {
               </Space>
             }
           >
-            <Form initialValues={{ remember: true }}>
+            <Form
+              initialValues={{ remember: true }}
+              onFinish={(values) => {
+                mutate({
+                  email: values.username,
+                  password: values.password,
+                });
+              }}
+            >
+              {isError && (
+                <Alert
+                  style={{ marginBottom: 24 }}
+                  type="error"
+                  title={error.message}
+                />
+              )}
               <Form.Item
                 name={"username"}
                 rules={[
@@ -69,6 +110,7 @@ const LoginPage = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
+                  loading={isPending}
                 >
                   Log in
                 </Button>
