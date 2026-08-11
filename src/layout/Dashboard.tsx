@@ -96,7 +96,12 @@ const Dashboard = () => {
               justify="space-between"
               style={{ padding: "0 16px" }}
             >
-              <Badge text="Global" status="success" />
+              <Badge
+                text={
+                  user.role === "admin" ? "You are admin" : user.tenant?.name
+                }
+                status="success"
+              />
               <Space size={16}>
                 <Badge dot={true}>
                   <BellFilled />
