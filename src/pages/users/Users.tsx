@@ -2,8 +2,9 @@ import { Breadcrumb, Space, Table } from "antd";
 import { Link, Navigate } from "react-router-dom";
 import { RightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "../http/api";
-import { useAuthStore, type User } from "../store";
+import { getUsers } from "../../http/api";
+import { useAuthStore, type User } from "../../store";
+import UserFilter from "./UserFilter";
 
 const columns = [
   {
@@ -61,6 +62,7 @@ const Users = () => {
         {isLoading && <div>Loading.....</div>}
         {isError && <div>{error.message}</div>}
         {/* <ul>{users && (<div>users?.map((user: User) => <li>{user.firstName}</li></div>)}</ul> */}
+        <UserFilter />
         <Table columns={columns} dataSource={users} />
       </Space>
     </>
