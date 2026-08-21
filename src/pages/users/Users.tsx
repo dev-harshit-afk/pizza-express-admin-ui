@@ -1,12 +1,13 @@
 import { Breadcrumb, Button, Drawer, Form, Space, Table } from "antd";
 import { Link, Navigate } from "react-router-dom";
 import { PlusOutlined, RightOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "../../http/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createUser, getUsers } from "../../http/api";
 import { useAuthStore, type User } from "../../store";
 import UserFilter from "./UserFilter";
 import { useState } from "react";
 import UserForm from "./forms/UserForm";
+import type { CreateUser } from "../../types";
 
 const columns = [
   {
@@ -38,6 +39,8 @@ const columns = [
   },
 ];
 const Users = () => {
+  const queryClient = useQueryClient();
+  const [form] = Form.useForm();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const onCloseDrawer = () => {
     setDrawerOpen(false);
@@ -56,6 +59,20 @@ const Users = () => {
   });
 
   const { user } = useAuthStore();
+  const { mutate: createUserMutation } = useMutation({
+    mutationKey: ["user"],
+    mutationFn: (user: CreateUser) => createUser(user).then((res) => res.data),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDrawerOpen(false);
+      return;
+    },
+  });
+
+  const onHandleSubmit = async () => {
+    await form.validateFields();
+    createUserMutation(form.getFieldsValue());
+  };
 
   if (user?.role !== "admin") {
     return <Navigate to="/" replace={true} />;
@@ -90,13 +107,13 @@ const Users = () => {
           extra={
             <Space>
               <Button onClick={onCloseDrawer}>Cancel</Button>
-              <Button onClick={onCloseDrawer} type="primary">
+              <Button onClick={onHandleSubmit} type="primary">
                 Submit
               </Button>
             </Space>
           }
         >
-          <Form layout="vertical" requiredMark={false}>
+          <Form layout="vertical" requiredMark={false} form={form}>
             <UserForm />
           </Form>
         </Drawer>

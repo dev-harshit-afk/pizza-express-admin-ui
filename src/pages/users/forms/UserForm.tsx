@@ -35,10 +35,9 @@ const UserForm = () => {
               label="Email"
               rules={[{ required: true, message: "Please provide email" }]}
             >
-              {" "}
               <Input
                 type={"email"}
-                placeholder="Please enter Last name"
+                placeholder="Please enter email"
                 size="large"
               />
             </Form.Item>
@@ -68,7 +67,7 @@ const UserForm = () => {
             <Form.Item
               name="role"
               label="Role"
-              rules={[{ required: true, message: "Please provide password" }]}
+              rules={[{ required: true, message: "Please provide role" }]}
             >
               <Select
                 style={{ width: "100%" }}
@@ -87,7 +86,7 @@ const UserForm = () => {
             <Form.Item
               name="tenantId"
               label="Restaurant"
-              rules={[{ required: true, message: "Please provide password" }]}
+              rules={[{ required: true, message: "Please provide restaurant" }]}
             >
               <Select
                 style={{ width: "100%" }}

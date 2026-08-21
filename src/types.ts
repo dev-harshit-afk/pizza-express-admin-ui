@@ -8,3 +8,12 @@ export type Tenant = {
   address: string;
   id: number;
 };
+
+export type CreateUser = {
+  firstName: string;
+  email: string;
+  lastName: string;
+  password: string;
+  role: string;
+  tenantId: number;
+};
