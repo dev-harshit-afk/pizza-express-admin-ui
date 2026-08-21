@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Drawer, Space, Table } from "antd";
+import { Breadcrumb, Button, Drawer, Form, Space, Table } from "antd";
 import { Link, Navigate } from "react-router-dom";
 import { PlusOutlined, RightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { getUsers } from "../../http/api";
 import { useAuthStore, type User } from "../../store";
 import UserFilter from "./UserFilter";
 import { useState } from "react";
+import UserForm from "./forms/UserForm";
 
 const columns = [
   {
@@ -95,10 +96,9 @@ const Users = () => {
             </Space>
           }
         >
-          <p>This is component</p>
-          <p>This is component</p>
-
-          <p>This is component</p>
+          <Form layout="vertical" requiredMark={false}>
+            <UserForm />
+          </Form>
         </Drawer>
       </Space>
     </>
