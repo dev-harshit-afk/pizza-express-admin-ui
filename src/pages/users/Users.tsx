@@ -1,7 +1,26 @@
-import { Breadcrumb, Button, Drawer, Form, Space, Table } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Drawer,
+  Flex,
+  Form,
+  Space,
+  Spin,
+  Table,
+  Typography,
+} from "antd";
 import { Link, Navigate } from "react-router-dom";
-import { PlusOutlined, RightOutlined } from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  LoadingOutlined,
+  PlusOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { createUser, getUsers } from "../../http/api";
 import { useAuthStore, type User } from "../../store";
 import UserFilter from "./UserFilter";
@@ -42,6 +61,10 @@ const Users = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [queryParams, setQueryParams] = useState({
+    perPage: 2,
+    currentPage: 1,
+  });
   const onCloseDrawer = () => {
     setDrawerOpen(false);
   };
@@ -50,12 +73,19 @@ const Users = () => {
   };
   const {
     data: users,
-    isLoading,
+    isFetching,
     isError,
     error,
   } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => getUsers().then((res) => res.data),
+    queryKey: ["users", queryParams],
+    queryFn: () => {
+      const queryString = new URLSearchParams(
+        queryParams as unknown as Record<string, string>,
+      ).toString();
+
+      return getUsers(queryString).then((res) => res.data);
+    },
+    placeholderData: keepPreviousData,
   });
 
   const { user } = useAuthStore();
@@ -81,13 +111,22 @@ const Users = () => {
   return (
     <>
       <Space vertical style={{ width: "100%" }} size={"large"}>
-        <Breadcrumb
-          separator={<RightOutlined />}
-          items={[{ title: <Link to="/">Dashboard</Link> }, { title: "Users" }]}
-        ></Breadcrumb>
-        {isLoading && <div>Loading.....</div>}
-        {isError && <div>{error.message}</div>}
-        {/* <ul>{users && (<div>users?.map((user: User) => <li>{user.firstName}</li></div>)}</ul> */}
+        <Flex justify="space-between">
+          <Breadcrumb
+            separator={<RightOutlined />}
+            items={[
+              { title: <Link to="/">Dashboard</Link> },
+              { title: "Users" },
+            ]}
+          ></Breadcrumb>
+          {isFetching && (
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
+          )}
+          {isError && <Typography.Text>{error.message}</Typography.Text>}
+        </Flex>
+
         <UserFilter
           onFilterChange={(filterName: string, filterValue: string) => {
             console.log(filterName, filterValue);
@@ -97,7 +136,20 @@ const Users = () => {
             Create users
           </Button>
         </UserFilter>
-        <Table columns={columns} dataSource={users} />
+        <Table
+          columns={columns}
+          dataSource={users?.data}
+          pagination={{
+            total: users?.total,
+            pageSize: queryParams.perPage,
+            current: queryParams.currentPage,
+            onChange: (page) => {
+              setQueryParams((prev) => {
+                return { ...prev, currentPage: page };
+              });
+            },
+          }}
+        />
         <Drawer
           title="Create new user"
           size={720}
