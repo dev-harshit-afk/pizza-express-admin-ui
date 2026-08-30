@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { getTenants } from "../../../http/api";
 import type { Tenant } from "../../../types";
-const UserForm = () => {
+const UserForm = ({ isEditMode = false }) => {
   const { data: tenants } = useQuery({
     queryKey: ["tenants"],
     queryFn: () => getTenants().then((res) => res.data),
@@ -45,22 +45,25 @@ const UserForm = () => {
         </Row>
       </Card>
 
-      <Card variant="borderless" title="Security">
-        <Row>
-          <Col>
-            <Form.Item
-              name="password"
-              label="Password"
-              rules={[{ required: true, message: "Please provide password" }]}
-            >
-              <Input.Password
-                placeholder="Please enter the password"
-                size="large"
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-      </Card>
+      {!isEditMode && (
+        <Card variant="borderless" title="Security">
+          <Row>
+            <Col>
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[{ required: true, message: "Please provide password" }]}
+              >
+                <Input.Password
+                  placeholder="Please enter the password"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+      )}
+
       <Card variant="borderless" title="Role">
         <Row style={{ width: "100%" }} gutter={20}>
           <Col span={12}>
@@ -70,6 +73,7 @@ const UserForm = () => {
               rules={[{ required: true, message: "Please provide role" }]}
             >
               <Select
+                id="selectBoxIbnUserForm"
                 style={{ width: "100%" }}
                 placeholder="Status"
                 options={[
