@@ -1,45 +1,38 @@
-import {  Card, Col, Input, Row, Select } from "antd";
+import { Card, Col, Form, Input, Row, Select } from "antd";
 
 type UsersFilterProps = {
   children: React.ReactNode;
-  onFilterChange: (filterName: string, filterValue: string) => void;
 };
 
-const UserFilter = ({ onFilterChange, children }: UsersFilterProps) => {
+const UserFilter = ({ children }: UsersFilterProps) => {
   return (
     <Card>
       <Row justify={"space-between"}>
         <Col span={16}>
           <Row gutter={20}>
             <Col span={8}>
-              <Input.Search
-                placeholder="search"
-                onChange={(e) => onFilterChange("searchFilter", e.target.value)}
-                allowClear={true}
-              />
+              <Form.Item name="q">
+                <Input.Search placeholder="search" allowClear={true} />
+              </Form.Item>
             </Col>
             <Col>
-              <Select
-                style={{ width: 120 }}
-                placeholder="Select Role"
-                options={[{ value: "Admin" }, { value: "Manager" }]}
-                onChange={(selectedItem) =>
-                  onFilterChange("roleFilter", selectedItem)
-                }
-                allowClear={true}
-              ></Select>
+              <Form.Item name="role">
+                <Select
+                  style={{ width: 120 }}
+                  placeholder="Select Role"
+                  options={[{ value: "Admin" }, { value: "Manager" }]}
+                  allowClear={true}
+                ></Select>
+              </Form.Item>
             </Col>
-            <Col>
+            {/* <Col>
               <Select
                 style={{ width: 120 }}
                 placeholder="Status"
                 options={[{ value: "Active" }, { value: "Ban" }]}
-                onChange={(statuFilter) =>
-                  onFilterChange("roleFilter", statuFilter)
-                }
                 allowClear={true}
               ></Select>
-            </Col>
+            </Col> */}
           </Row>
         </Col>
 
