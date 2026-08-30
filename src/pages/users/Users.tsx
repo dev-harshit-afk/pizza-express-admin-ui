@@ -24,9 +24,10 @@ import {
 import { createUser, getUsers } from "../../http/api";
 import { useAuthStore, type User } from "../../store";
 import UserFilter from "./UserFilter";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import UserForm from "./forms/UserForm";
 import type { CreateUser, FieldData } from "../../types";
+import { debounce } from "lodash";
 
 const columns = [
   {
@@ -108,14 +109,24 @@ const Users = () => {
     createUserMutation(form.getFieldsValue());
   };
 
+  const deboucedQUpdate = useMemo(() => {
+    return debounce((value) => {
+      setQueryParams((prev) => ({ ...prev, q: value }));
+    }, 1000);
+  }, []);
+
   const onFilterChange = (changedFields: FieldData[]) => {
-    console.log(changedFields);
     const changedFilterFields = changedFields
       .map((item) => ({
         [item.name[0]]: item.value,
       }))
       .reduce((acc, item) => ({ ...acc, ...item }), {});
-    setQueryParams((prev) => ({ ...prev, ...changedFilterFields }));
+
+    if ("q" in changedFilterFields) {
+      deboucedQUpdate(changedFilterFields.q);
+    } else {
+      setQueryParams((prev) => ({ ...prev, ...changedFilterFields }));
+    }
   };
 
   if (user?.role !== "admin") {
