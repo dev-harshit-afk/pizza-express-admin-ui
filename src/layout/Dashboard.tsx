@@ -1,4 +1,4 @@
-import { Navigate, Outlet, NavLink } from "react-router-dom";
+import { Navigate, Outlet, NavLink, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store";
 
 import {
@@ -63,6 +63,7 @@ const getMenuItems = (role: string) => {
 };
 
 const Dashboard = () => {
+  const location = useLocation();
   const { user, logout: logoutFromStore } = useAuthStore();
   const { mutate: logoutMutation } = useMutation({
     mutationKey: ["logout"],
@@ -77,7 +78,12 @@ const Dashboard = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   if (user === null) {
-    return <Navigate to="/auth/login" replace={true} />;
+    return (
+      <Navigate
+        to={`/auth/login?returnTo=${location.pathname}`}
+        replace={true}
+      />
+    );
   }
   const items = getMenuItems(user.role);
 
