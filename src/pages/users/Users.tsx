@@ -57,6 +57,14 @@ const columns = [
     dataIndex: "role",
     key: "role",
   },
+  {
+    title: "Restaurants",
+    dataIndex: "tenant",
+    key: "tenant",
+    render: (_text: string, record: User) => {
+      return <div>{record.tenant?.name}</div>;
+    },
+  },
 ];
 const Users = () => {
   const queryClient = useQueryClient();
@@ -111,8 +119,8 @@ const Users = () => {
 
   const deboucedQUpdate = useMemo(() => {
     return debounce((value) => {
-      setQueryParams((prev) => ({ ...prev, q: value }));
-    }, 1000);
+      setQueryParams((prev) => ({ ...prev, q: value, currentPage: 1 }));
+    }, 500);
   }, []);
 
   const onFilterChange = (changedFields: FieldData[]) => {
@@ -125,7 +133,11 @@ const Users = () => {
     if ("q" in changedFilterFields) {
       deboucedQUpdate(changedFilterFields.q);
     } else {
-      setQueryParams((prev) => ({ ...prev, ...changedFilterFields }));
+      setQueryParams((prev) => ({
+        ...prev,
+        ...changedFilterFields,
+        currentPage: 1,
+      }));
     }
   };
 
@@ -174,6 +186,9 @@ const Users = () => {
               setQueryParams((prev) => {
                 return { ...prev, currentPage: page };
               });
+            },
+            showTotal: (total, range) => {
+              return `Showing ${range[0]}-${range[1]} of ${total} items`;
             },
           }}
         />
