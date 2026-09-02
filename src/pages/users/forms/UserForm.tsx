@@ -3,6 +3,7 @@ import { Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { getTenants } from "../../../http/api";
 import type { Tenant } from "../../../types";
 const UserForm = ({ isEditMode = false }) => {
+  const selectedRole = Form.useWatch("role");
   const { data: tenants } = useQuery({
     queryKey: ["tenants"],
     queryFn: () => getTenants().then((res) => res.data),
@@ -37,6 +38,7 @@ const UserForm = ({ isEditMode = false }) => {
             >
               <Input
                 type={"email"}
+                disabled={isEditMode}
                 placeholder="Please enter email"
                 size="large"
               />
@@ -79,30 +81,34 @@ const UserForm = ({ isEditMode = false }) => {
                 options={[
                   { value: "Admin" },
                   { value: "Manager" },
-                  { value: "User" },
+                  { value: "Customer" },
                 ]}
                 onChange={() => {}}
                 allowClear={true}
               ></Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item
-              name="tenantId"
-              label="Restaurant"
-              rules={[{ required: true, message: "Please provide restaurant" }]}
-            >
-              <Select
-                style={{ width: "100%" }}
-                placeholder="Tenant"
-                options={tenants?.map((tenant: Tenant) => {
-                  return { label: tenant.name, value: tenant.id };
-                })}
-                onChange={() => {}}
-                allowClear={true}
-              ></Select>
-            </Form.Item>
-          </Col>
+          {selectedRole === "Manager" && (
+            <Col span={12}>
+              <Form.Item
+                name="tenantId"
+                label="Restaurant"
+                rules={[
+                  { required: true, message: "Please provide restaurant" },
+                ]}
+              >
+                <Select
+                  style={{ width: "100%" }}
+                  placeholder="Tenant"
+                  options={tenants?.map((tenant: Tenant) => {
+                    return { label: tenant.name, value: tenant.id };
+                  })}
+                  onChange={() => {}}
+                  allowClear={true}
+                ></Select>
+              </Form.Item>
+            </Col>
+          )}
         </Row>
       </Card>
     </Space>
