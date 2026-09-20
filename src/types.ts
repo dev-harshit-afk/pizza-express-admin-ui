@@ -8,6 +8,10 @@ export type Tenant = {
   address: string;
   id: number;
 };
+export type CreateTenant = {
+  name: string;
+  address: string;
+};
 
 export type CreateUser = {
   firstName: string;
