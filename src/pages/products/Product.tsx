@@ -8,9 +8,14 @@ import {
   Table,
   Tag,
   Typography,
+  Spin,
 } from "antd";
 import { Link } from "react-router-dom";
-import { PlusOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  RightOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import ProductFilter from "./ProductFilter";
 import type { FieldData, Product } from "../../types";
 import { getProducts } from "../../http/api";
@@ -18,6 +23,7 @@ import { useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { debounce } from "lodash";
+import { useAuthStore } from "../../store";
 
 const columns = [
   {
@@ -70,10 +76,13 @@ const columns = [
 ];
 
 const Product = () => {
+  const { user } = useAuthStore();
+
   const [filterForm] = Form.useForm();
   const [queryParams, setQueryParams] = useState({
     limit: 4,
     page: 1,
+    tenantId: user?.role === "admin" ? undefined : user?.tenant?.id,
   });
   const {
     data: products,
@@ -131,6 +140,10 @@ const Product = () => {
             { title: "Products" },
           ]}
         ></Breadcrumb>
+        {isFetching && (
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        )}
+        {isError && <Typography.Text>{error.message}</Typography.Text>}
       </Flex>
       <Form form={filterForm} onFieldsChange={onFilterChange}>
         <ProductFilter>

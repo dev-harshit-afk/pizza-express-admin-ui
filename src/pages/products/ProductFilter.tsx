@@ -1,13 +1,25 @@
-import { Card, Col, Form, Input, Row, Select, Switch, Typography } from "antd";
+import {
+  Card,
+  Col,
+  Flex,
+  Form,
+  Input,
+  Row,
+  Select,
+  Switch,
+  Typography,
+} from "antd";
 import { getCategories, getTenants } from "../../http/api";
 import { useQuery } from "@tanstack/react-query";
 import type { Category, Tenant } from "../../types";
+import { useAuthStore } from "../../store";
 
 type ProductFilterProps = {
   children: React.ReactNode;
 };
 
 const ProductFilter = ({ children }: ProductFilterProps) => {
+  const { user } = useAuthStore();
   const { data: restaurants } = useQuery({
     queryKey: ["restaurants"],
     queryFn: () =>
@@ -41,16 +53,18 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                 <Input.Search placeholder="search" allowClear={true} />
               </Form.Item>
             </Col>
-            <Col span={6}>
-              <Form.Item name="tenantId">
-                <Select
-                  style={{ width: "100%" }}
-                  placeholder="Select Restaurans"
-                  options={restaurantOptions}
-                  allowClear={true}
-                ></Select>
-              </Form.Item>
-            </Col>
+            {user?.role === "admin" && (
+              <Col span={6}>
+                <Form.Item name="tenantId">
+                  <Select
+                    style={{ width: "100%" }}
+                    placeholder="Select Restaurans"
+                    options={restaurantOptions}
+                    allowClear={true}
+                  ></Select>
+                </Form.Item>
+              </Col>
+            )}
             <Col span={6}>
               <Form.Item name="categoryId">
                 <Select
@@ -62,12 +76,14 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="isPublish" valuePropName="checked">
-                <Switch />
-              </Form.Item>
-              <Typography.Text style={{ marginLeft: 8 }}>
-                isPublished
-              </Typography.Text>
+              <Flex align="center">
+                <Form.Item name="isPublish" valuePropName="checked">
+                  <Switch />
+                </Form.Item>
+                <Typography.Text style={{ marginLeft: 8, marginBottom: 22 }}>
+                  isPublished
+                </Typography.Text>
+              </Flex>
             </Col>
           </Row>
         </Col>
