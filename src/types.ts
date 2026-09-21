@@ -26,3 +26,29 @@ export type FieldData = {
   name: string[];
   value?: string;
 };
+
+//need update it , currently it is temp
+export type Category = {
+  name: string;
+  _id: string;
+  attributes: {
+    name: string;
+    widgetType: string;
+    defaultValue: string;
+  }[];
+  priceConfiguration: {
+    name: string;
+    defaultValue: number;
+  };
+};
+
+export type Product = {
+  name: string;
+  _id: string;
+  category: Category;
+  description: string;
+  isPublish: boolean;
+  price: number;
+  imageUrl: string;
+  createdAt: string;
+};

@@ -4,6 +4,7 @@ import { api } from "./client";
 //authService
 
 const authService = "/api/auth";
+const catalogService = "/api/catalog";
 
 export const login = (credetials: loginCredentials) =>
   api.post(`${authService}/auth/login`, credetials);
@@ -29,3 +30,9 @@ export const createTenant = (tenant: CreateTenant) =>
 
 export const updateTenant = (tenant: CreateTenant, id: string) =>
   api.patch(`${authService}/tenants/${id}`, tenant);
+
+export const getCategories = (categoryQueryString: string) =>
+  api.get(`${catalogService}/categories?${categoryQueryString}`);
+
+export const getProducts = (productQueryString: string) =>
+  api.get(`${catalogService}/products?${productQueryString}`);
